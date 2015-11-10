@@ -1,4 +1,4 @@
-package de.cellent.test.bean;
+package de.cellent.test.fooBean;
 
 import javax.ejb.Remote;
 
