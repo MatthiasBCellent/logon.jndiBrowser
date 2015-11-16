@@ -12,13 +12,18 @@ import de.cellent.test.fooBean.HelloWorld;
 
 public class JNDIBrowserTest {
 	
-	private static JNDIBrowser browser;
+	private static JNDIBrowserWrapper browser;
+	
+	private static DEPLOYMENT mode = DEPLOYMENT.EAR;
+	private enum DEPLOYMENT {
+		EAR, JAR
+	}
 
 	public static void main(String[] args) {
 		JNDIBrowserTest.setUp();
 		JNDIBrowserTest test = new JNDIBrowserTest();
 		
-		test.testForNwJndiName();
+//		test.testGetJndiName();
 		test.testGetAllBindings();
 		
 	}
@@ -31,12 +36,11 @@ public class JNDIBrowserTest {
 		}
 	}
 
-	public void testForNwJndiName() {
+	public void testGetJndiName() {
 		
 		String jndi;
 		try {
 			jndi = browser.getLookupString(HelloWorld.class);
-			// ejb:barService_ear-0.0.1-SNAPSHOT/barService/BarServiceBean!de.cellent.test.barService.BarService
 			System.out.println(jndi);	
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
@@ -47,7 +51,13 @@ public class JNDIBrowserTest {
 	public static void setUp() {
 		try {
 			Context ctx = new InitialContext();
-			browser = (JNDIBrowser) ctx.lookup("/jndiBrowser-0.0.1-SNAPSHOT/JNDIBrowserBean!de.cellent.test.jndi.JNDIBrowser");
+			String lookup = "ejb:jndiBrowser_ear-0.0.1-SNAPSHOT/jndiBrowser/JNDIBrowserWrapperBean!de.cellent.test.jndi.JNDIBrowserWrapper";
+			
+			if(JNDIBrowserTest.mode == DEPLOYMENT.JAR) {
+				lookup = "ejb:/jndiBrowser-0.0.1-SNAPSHOT/JNDIBrowserWrapperBean!de.cellent.test.jndi.JNDIBrowserWrapper";
+			}
+			
+			browser = (JNDIBrowserWrapper) ctx.lookup(lookup);
 		} catch (NamingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
